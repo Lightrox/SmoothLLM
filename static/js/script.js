@@ -31,18 +31,6 @@ function initializeApp() {
     
     // Check if user is logged in via server session
     checkUserSession();
-
-    // Point Sign In link to backend origin if configured (for Vercel frontend + separate backend)
-    try {
-        if (signInBtn) {
-            const isLoggedIn = !!currentUser;
-            if (!isLoggedIn) {
-                if (typeof buildBackendUrl === 'function') {
-                    signInBtn.href = buildBackendUrl('/signin');
-                }
-            }
-        }
-    } catch (_) {}
 }
 
 function setupEventListeners() {
