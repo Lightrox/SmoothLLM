@@ -7,6 +7,150 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Password toggle styles */
+        .password-input-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: color 0.2s ease;
+            z-index: 10;
+        }
+        
+        .password-toggle:hover {
+            color: #374151;
+        }
+        
+        .form-input {
+            padding-right: 3rem !important;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header .close {
+            color: #6b7280;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .modal-header .close:hover {
+            color: #374151;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-form {
+            margin-top: 1rem;
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .modal-form input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modal-form input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -59,14 +203,19 @@
                                 <i class="fas fa-lock"></i>
                                 Password
                             </label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                class="form-input" 
-                                placeholder="Enter your password"
-                                required
-                            >
+                            <div class="password-input-container">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    class="form-input" 
+                                    placeholder="Enter your password"
+                                    required
+                                >
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye" id="password-eye"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="form-options">
@@ -75,7 +224,7 @@
                                 <span class="checkmark"></span>
                                 Remember me
                             </label>
-                            <a href="#" class="forgot-password">Forgot password?</a>
+                            <a href="#" id="forgotPasswordLink" class="forgot-password">Forgot password?</a>
                         </div>
 
                         <button type="submit" class="btn-primary" id="signInBtn">
@@ -87,7 +236,7 @@
                             <span>or</span>
                         </div>
 
-                        <a href="/templates/signup.html" class="btn-secondary">
+                        <a href="/signup" class="btn-secondary">
                             <i class="fas fa-user-plus"></i>
                             Create New Account
                         </a>
@@ -111,5 +260,160 @@
     </div>
 
     <script src="/static/js/auth.js"></script>
+    <script>
+        // Password toggle functionality
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(inputId + '-eye');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Forgot password functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showForgotPasswordModal();
+                });
+            }
+        });
+
+        function showForgotPasswordModal() {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('forgotPasswordModal');
+            if (!modal) {
+                modal = createForgotPasswordModal();
+                document.body.appendChild(modal);
+            }
+            
+            // Clear form
+            const form = modal.querySelector('#forgotPasswordForm');
+            if (form) form.reset();
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function createForgotPasswordModal() {
+            const modal = document.createElement('div');
+            modal.id = 'forgotPasswordModal';
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-key"></i> Forgot Password</h2>
+                        <span class="close" onclick="closeModal('forgotPasswordModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <p style="margin-bottom: 1rem; color: #6b7280;">
+                            Enter your email address and we'll send you a link to reset your password.
+                        </p>
+                        <form id="forgotPasswordForm" class="modal-form">
+                            <div class="form-group">
+                                <label for="forgotEmail">Email Address</label>
+                                <input type="email" id="forgotEmail" name="email" required 
+                                       placeholder="Enter your email address">
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                                <button type="button" class="btn-secondary" onclick="closeModal('forgotPasswordModal')">Cancel</button>
+                                <button type="submit" class="btn-primary">Send Reset Link</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Add form submission handler
+            modal.querySelector('#forgotPasswordForm').addEventListener('submit', handleForgotPassword);
+            
+            return modal;
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            if (!email) {
+                showMessage('Please enter your email address', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('If the email exists, a reset link has been sent to your inbox.', 'success');
+                    closeModal('forgotPasswordModal');
+                } else {
+                    showMessage(data.error || 'Failed to send reset email', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function showMessage(message, type) {
+            // Create or update message container
+            let messageContainer = document.getElementById('messageContainer');
+            if (!messageContainer) {
+                messageContainer = document.createElement('div');
+                messageContainer.id = 'messageContainer';
+                messageContainer.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; z-index: 10000;
+                    max-width: 400px; padding: 1rem; border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    display: none;
+                `;
+                document.body.appendChild(messageContainer);
+            }
+            
+            const bgColor = type === 'success' ? '#dcfce7' : '#fef2f2';
+            const textColor = type === 'success' ? '#166534' : '#dc2626';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            messageContainer.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas ${icon}" style="color: ${textColor};"></i>
+                    <span style="color: ${textColor}; font-weight: 500;">${message}</span>
+                </div>
+            `;
+            messageContainer.style.backgroundColor = bgColor;
+            messageContainer.style.border = `1px solid ${type === 'success' ? '#bbf7d0' : '#fecaca'}`;
+            messageContainer.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+            }, 5000);
+        }
+    </script>
 </body>
 </html>

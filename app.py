@@ -2,17 +2,14 @@ from flask import Flask, render_template, request, jsonify, session
 import os
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import uuid
 
-# Import SmoothLLM modules (disabled for Netlify deployment)
-# import lib.perturbations as perturbations
-# import lib.defenses as defenses
-# import lib.attacks as attacks
-# from lib.attacks import CustomPromptAttack
-# import lib.language_models as language_models
-# import lib.model_configs as model_configs
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -72,6 +69,19 @@ def init_db():
         )
     ''')
     
+    # Password reset tokens table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT UNIQUE NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            used BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+    
     conn.commit()
     conn.close()
 
@@ -118,6 +128,12 @@ def signup():
 def profile():
     """Render the profile page. Client will fetch user via /api/user and redirect if unauthenticated."""
     return render_template('profile.html')
+
+@app.route('/reset-password')
+def reset_password_page():
+    """Render the password reset page."""
+    token = request.args.get('token', '')
+    return render_template('reset-password.html', token=token)
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_prompt():
@@ -438,6 +454,467 @@ def export_user_data():
     except Exception as e:
         print(f"Error in export_user_data: {e}")
         return jsonify({'error': 'Failed to export data'}), 500
+
+@app.route('/api/user/update', methods=['POST'])
+def update_user_profile():
+    """Update user profile information."""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        name = data.get('name', '').strip()
+        email = data.get('email', '').strip().lower()
+        
+        if not name or not email:
+            return jsonify({'error': 'Name and email are required'}), 400
+        
+        conn = get_db_connection()
+        
+        # Check if email is already taken by another user
+        existing_user = conn.execute(
+            'SELECT id FROM users WHERE email = ? AND id != ?', 
+            (email, session['user_id'])
+        ).fetchone()
+        
+        if existing_user:
+            conn.close()
+            return jsonify({'error': 'Email already in use'}), 409
+        
+        # Update user information
+        conn.execute(
+            'UPDATE users SET name = ?, email = ? WHERE id = ?',
+            (name, email, session['user_id'])
+        )
+        conn.commit()
+        conn.close()
+        
+        # Update session
+        session['user_name'] = name
+        session['user_email'] = email
+        
+        return jsonify({
+            'success': True,
+            'user': {
+                'id': session['user_id'],
+                'name': name,
+                'email': email
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error in update_user_profile: {e}")
+        return jsonify({'error': 'Failed to update profile'}), 500
+
+@app.route('/api/user/change-password', methods=['POST'])
+def change_password():
+    """Change user password."""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        current_password = data.get('current_password', '')
+        new_password = data.get('new_password', '')
+        
+        if not current_password or not new_password:
+            return jsonify({'error': 'Current and new passwords are required'}), 400
+        
+        if len(new_password) < 6:
+            return jsonify({'error': 'New password must be at least 6 characters'}), 400
+        
+        conn = get_db_connection()
+        
+        # Get current user
+        user = conn.execute(
+            'SELECT password_hash FROM users WHERE id = ?', 
+            (session['user_id'],)
+        ).fetchone()
+        
+        if not user:
+            conn.close()
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Verify current password
+        if not verify_password(current_password, user['password_hash']):
+            conn.close()
+            return jsonify({'error': 'Current password is incorrect'}), 401
+        
+        # Update password
+        new_password_hash = hash_password(new_password)
+        conn.execute(
+            'UPDATE users SET password_hash = ? WHERE id = ?',
+            (new_password_hash, session['user_id'])
+        )
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Password updated successfully'})
+        
+    except Exception as e:
+        print(f"Error in change_password: {e}")
+        return jsonify({'error': 'Failed to change password'}), 500
+
+@app.route('/api/user/delete', methods=['POST'])
+def delete_user_account():
+    """Delete user account and all associated data."""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        password = data.get('password', '')
+        
+        if not password:
+            return jsonify({'error': 'Password confirmation is required'}), 400
+        
+        conn = get_db_connection()
+        
+        # Get current user
+        user = conn.execute(
+            'SELECT password_hash FROM users WHERE id = ?', 
+            (session['user_id'],)
+        ).fetchone()
+        
+        if not user:
+            conn.close()
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Verify password
+        if not verify_password(password, user['password_hash']):
+            conn.close()
+            return jsonify({'error': 'Password is incorrect'}), 401
+        
+        # Delete user data (cascade will handle prompt_history)
+        conn.execute('DELETE FROM users WHERE id = ?', (session['user_id'],))
+        conn.commit()
+        conn.close()
+        
+        # Clear session
+        session.clear()
+        
+        return jsonify({'success': True, 'message': 'Account deleted successfully'})
+        
+    except Exception as e:
+        print(f"Error in delete_user_account: {e}")
+        return jsonify({'error': 'Failed to delete account'}), 500
+
+@app.route('/api/forgot-password', methods=['POST'])
+def forgot_password():
+    """Send password reset email."""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        conn = get_db_connection()
+        
+        # Check if user exists
+        user = conn.execute(
+            'SELECT id, name FROM users WHERE email = ?', (email,)
+        ).fetchone()
+        
+        if not user:
+            conn.close()
+            # Don't reveal if email exists or not for security
+            return jsonify({'success': True, 'message': 'If the email exists, a reset link has been sent'})
+        
+        # Generate reset token
+        reset_token = str(uuid.uuid4())
+        expires_at = datetime.now() + timedelta(hours=1)  # Token expires in 1 hour
+        
+        # Store reset token
+        conn.execute(
+            'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
+            (user['id'], reset_token, expires_at)
+        )
+        conn.commit()
+        conn.close()
+        
+        # Send reset email (in production, you'd use a real email service)
+        try:
+            send_password_reset_email(email, user['name'], reset_token)
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+            # Still return success for security
+        
+        return jsonify({'success': True, 'message': 'If the email exists, a reset link has been sent'})
+        
+    except Exception as e:
+        print(f"Error in forgot_password: {e}")
+        return jsonify({'error': 'Failed to process request'}), 500
+
+@app.route('/api/reset-password', methods=['POST'])
+def reset_password():
+    """Reset password using token."""
+    try:
+        data = request.get_json()
+        token = data.get('token', '').strip()
+        new_password = data.get('password', '')
+        
+        if not token or not new_password:
+            return jsonify({'error': 'Token and password are required'}), 400
+        
+        if len(new_password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters'}), 400
+        
+        conn = get_db_connection()
+        
+        # Find valid token
+        token_record = conn.execute(
+            '''SELECT prt.*, u.email FROM password_reset_tokens prt
+               JOIN users u ON prt.user_id = u.id
+               WHERE prt.token = ? AND prt.used = FALSE AND prt.expires_at > ?''',
+            (token, datetime.now())
+        ).fetchone()
+        
+        if not token_record:
+            conn.close()
+            return jsonify({'error': 'Invalid or expired token'}), 400
+        
+        # Update password
+        new_password_hash = hash_password(new_password)
+        conn.execute(
+            'UPDATE users SET password_hash = ? WHERE id = ?',
+            (new_password_hash, token_record['user_id'])
+        )
+        
+        # Mark token as used
+        conn.execute(
+            'UPDATE password_reset_tokens SET used = TRUE WHERE id = ?',
+            (token_record['id'],)
+        )
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Password reset successfully'})
+        
+    except Exception as e:
+        print(f"Error in reset_password: {e}")
+        return jsonify({'error': 'Failed to reset password'}), 500
+
+def send_password_reset_email(email, name, token):
+    """Send password reset email (mock implementation for demo)."""
+    # In a real application, you would use a service like SendGrid, AWS SES, etc.
+    reset_url = f"{request.host_url}reset-password?token={token}"
+    
+    subject = "SmoothLLM - Password Reset Request"
+    body = f"""
+    Hello {name},
+    
+    You requested a password reset for your SmoothLLM account.
+    
+    Click the link below to reset your password:
+    {reset_url}
+    
+    This link will expire in 1 hour.
+    
+    If you didn't request this reset, please ignore this email.
+    
+    Best regards,
+    SmoothLLM Team
+    """
+    
+    # For demo purposes, just print the email content
+    print(f"Password reset email for {email}:")
+    print(f"Subject: {subject}")
+    print(f"Body: {body}")
+    print(f"Reset URL: {reset_url}")
+    
+    # In production, you would send the actual email here
+    # Example with SMTP:
+    # msg = MIMEMultipart()
+    # msg['From'] = "noreply@smoothllm.com"
+    # msg['To'] = email
+    # msg['Subject'] = subject
+    # msg.attach(MIMEText(body, 'plain'))
+    # 
+    # server = smtplib.SMTP('smtp.gmail.com', 587)
+    # server.starttls()
+    # server.login("your-email@gmail.com", "your-password")
+    # server.send_message(msg)
+    # server.quit()
+
+@app.route('/api/upload-file', methods=['POST'])
+def upload_file():
+    """Handle file upload and batch processing"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'message': 'No file provided'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'No file selected'}), 400
+        
+        # Check file size (10MB limit)
+        file.seek(0, 2)  # Seek to end
+        file_size = file.tell()
+        file.seek(0)  # Reset to beginning
+        
+        if file_size > 10 * 1024 * 1024:  # 10MB
+            return jsonify({'success': False, 'message': 'File too large. Maximum size is 10MB'}), 400
+        
+        # Read file content
+        content = file.read().decode('utf-8')
+        filename = file.filename
+        
+        # Process file based on extension
+        prompts = []
+        if filename.endswith('.json'):
+            try:
+                data = json.loads(content)
+                prompts = data if isinstance(data, list) else [data]
+            except json.JSONDecodeError:
+                return jsonify({'success': False, 'message': 'Invalid JSON format'}), 400
+        elif filename.endswith('.csv'):
+            lines = content.split('\n')
+            prompts = [line.strip() for line in lines if line.strip()]
+        else:  # .txt or other text files
+            lines = content.split('\n')
+            prompts = [line.strip() for line in lines if line.strip()]
+        
+        if not prompts:
+            return jsonify({'success': False, 'message': 'No valid prompts found in file'}), 400
+        
+        # Store file processing results
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Create file_uploads table if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS file_uploads (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                filename TEXT NOT NULL,
+                file_size INTEGER NOT NULL,
+                prompt_count INTEGER NOT NULL,
+                processed_count INTEGER DEFAULT 0,
+                safe_count INTEGER DEFAULT 0,
+                threat_count INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Insert file record
+        cursor.execute('''
+            INSERT INTO file_uploads (filename, file_size, prompt_count)
+            VALUES (?, ?, ?)
+        ''', (filename, file_size, len(prompts)))
+        
+        file_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'success': True, 
+            'message': f'File uploaded successfully. Found {len(prompts)} prompts.',
+            'file_id': file_id,
+            'prompt_count': len(prompts),
+            'prompts': prompts[:10]  # Return first 10 prompts for preview
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error processing file: {str(e)}'}), 500
+
+@app.route('/api/process-batch', methods=['POST'])
+def process_batch():
+    """Process batch of prompts"""
+    try:
+        data = request.get_json()
+        prompts = data.get('prompts', [])
+        file_id = data.get('file_id')
+        
+        if not prompts:
+            return jsonify({'success': False, 'message': 'No prompts provided'}), 400
+        
+        # Simulate batch processing
+        results = []
+        safe_count = 0
+        threat_count = 0
+        
+        for i, prompt in enumerate(prompts):
+            # Simulate analysis (replace with actual SmoothLLM analysis)
+            import random
+            is_safe = random.random() > 0.3  # 70% safe, 30% threats
+            
+            if is_safe:
+                safe_count += 1
+                status = 'safe'
+            else:
+                threat_count += 1
+                status = 'threat'
+            
+            results.append({
+                'prompt': prompt,
+                'status': status,
+                'jailbreak_rate': random.uniform(0, 0.8) if not is_safe else random.uniform(0, 0.2),
+                'analysis_time': random.uniform(0.1, 0.5)
+            })
+        
+        # Update file upload record
+        if file_id:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE file_uploads 
+                SET processed_count = ?, safe_count = ?, threat_count = ?
+                WHERE id = ?
+            ''', (len(prompts), safe_count, threat_count, file_id))
+            conn.commit()
+            conn.close()
+        
+        return jsonify({
+            'success': True,
+            'results': results,
+            'summary': {
+                'total': len(prompts),
+                'safe': safe_count,
+                'threats': threat_count,
+                'avg_response_time': sum(r['analysis_time'] for r in results) / len(results)
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error processing batch: {str(e)}'}), 500
+
+@app.route('/api/dashboard-stats', methods=['GET'])
+def get_dashboard_stats():
+    """Get dashboard statistics"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get total analyses
+        cursor.execute('SELECT COUNT(*) FROM prompt_history')
+        total_analyses = cursor.fetchone()[0]
+        
+        # Get safe prompts (assuming jailbreak_rate < 0.3 means safe)
+        cursor.execute('SELECT COUNT(*) FROM prompt_history WHERE jailbreak_rate < 0.3')
+        safe_prompts = cursor.fetchone()[0]
+        
+        # Get threats detected
+        cursor.execute('SELECT COUNT(*) FROM prompt_history WHERE jailbreak_rate >= 0.3')
+        threats_detected = cursor.fetchone()[0]
+        
+        # Get average response time (simulated)
+        avg_response_time = 0.2  # This would be calculated from actual response times
+        
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'total_analyses': total_analyses,
+                'safe_prompts': safe_prompts,
+                'threats_detected': threats_detected,
+                'avg_response_time': avg_response_time
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error getting stats: {str(e)}'}), 500
 
 # Initialize database
 init_db()

@@ -253,6 +253,303 @@
             color: #dc2626;
         }
         
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+        }
+        
+        [data-theme="dark"] body {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        [data-theme="dark"] html {
+            background: var(--bg-primary) !important;
+        }
+        
+        [data-theme="dark"] .main-content {
+            background: var(--bg-primary) !important;
+        }
+        
+        [data-theme="dark"] .navbar {
+            background: var(--bg-secondary);
+            border-bottom-color: var(--border-color);
+        }
+        
+        [data-theme="dark"] .nav-brand {
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .btn-nav-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        
+        [data-theme="dark"] .btn-nav-secondary:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        
+        [data-theme="dark"] .profile-hero {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        }
+        
+        [data-theme="dark"] .profile-card {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        
+        [data-theme="dark"] .profile-info h2 {
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .profile-info p {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .item-label {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .item-value {
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .stat-number {
+            color: #4f46e5;
+        }
+        
+        [data-theme="dark"] .stat-label {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .activity-text {
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .activity-time {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .modal {
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        [data-theme="dark"] .modal-content {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+        
+        [data-theme="dark"] .modal-header h2 {
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .modal-header .close {
+            color: var(--text-secondary);
+        }
+        
+        [data-theme="dark"] .modal-header .close:hover {
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .modal-form input {
+            background: var(--bg-tertiary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .modal-form input:focus {
+            background: var(--bg-primary);
+            border-color: #4f46e5;
+        }
+        
+        [data-theme="dark"] .btn-secondary {
+            background: var(--bg-tertiary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .btn-secondary:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        
+        [data-theme="dark"] .btn-link {
+            background: var(--bg-tertiary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .btn-link:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        
+        [data-theme="dark"] .loading-profile {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .error-profile {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        /* Theme Toggle Styles */
+        .btn-theme-toggle {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .btn-theme-toggle:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+        }
+        
+        [data-theme="dark"] .btn-theme-toggle {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        
+        [data-theme="dark"] .btn-theme-toggle:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header .close {
+            color: #6b7280;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .modal-header .close:hover {
+            color: #374151;
+        }
+
+        .modal-form {
+            padding: 1.5rem;
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .modal-form input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modal-form input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+
         @media (max-width: 768px) {
             .profile-content {
                 grid-template-columns: 1fr;
@@ -268,6 +565,11 @@
             
             .profile-actions {
                 flex-direction: column;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
             }
         }
     </style>
@@ -400,6 +702,9 @@
                     </h3>
 
                 <div class="profile-actions">
+                        <a href="#" id="accountSettingsBtn" class="btn-link">
+                            <i class="fas fa-user-edit"></i> Account Settings
+                        </a>
                         <a href="#" id="viewHistoryBtn" class="btn-link">
                             <i class="fas fa-history"></i> View Full History
                         </a>
@@ -434,7 +739,54 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadUserProfile();
             setupEventListeners();
+            initializeTheme();
         });
+        
+        // Theme Toggle Functionality
+        function initializeTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            // Theme toggle event
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = body.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    
+                    body.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                    
+                    // Add transition effect
+                    body.style.transition = 'all 0.3s ease';
+                    setTimeout(() => {
+                        body.style.transition = '';
+                    }, 300);
+                });
+            }
+        }
+        
+        function updateThemeIcon(theme) {
+            const themeToggle = document.getElementById('themeToggle');
+            if (!themeToggle) return;
+            
+            const icon = themeToggle.querySelector('i');
+            
+            if (theme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                themeToggle.title = 'Switch to Light Mode';
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                themeToggle.title = 'Switch to Dark Mode';
+            }
+        }
 
         function setupEventListeners() {
             // Sign out buttons
@@ -442,11 +794,13 @@
             if (profileSignOut) profileSignOut.addEventListener('click', handleSignOut);
 
             // Additional action buttons
+            const accountSettingsBtn = document.getElementById('accountSettingsBtn');
             const viewHistoryBtn = document.getElementById('viewHistoryBtn');
             const exportDataBtn = document.getElementById('exportDataBtn');
             const changePasswordBtn = document.getElementById('changePasswordBtn');
             const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
+            if (accountSettingsBtn) accountSettingsBtn.addEventListener('click', showAccountSettings);
             if (viewHistoryBtn) viewHistoryBtn.addEventListener('click', viewFullHistory);
             if (exportDataBtn) exportDataBtn.addEventListener('click', exportUserData);
             if (changePasswordBtn) changePasswordBtn.addEventListener('click', changePassword);
@@ -561,8 +915,73 @@
 
         function handleSignOut(e) {
             e.preventDefault();
+            showSignOutModal();
+        }
+
+        function showSignOutModal() {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('signOutModal');
+            if (!modal) {
+                modal = createSignOutModal();
+                document.body.appendChild(modal);
+            }
             
-            if (confirm('Are you sure you want to sign out?')) {
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function createSignOutModal() {
+            const modal = document.createElement('div');
+            modal.id = 'signOutModal';
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px; border-radius: 20px; overflow: hidden;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-bottom: none; padding: 2rem 2rem 1rem;">
+                        <div style="text-align: center; width: 100%;">
+                            <div style="width: 100px; height: 100px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #dc2626, #b91c1c); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3); animation: pulse 2s infinite;">
+                                <i class="fas fa-sign-out-alt" style="font-size: 2.5rem; color: white;"></i>
+                            </div>
+                            <h2 style="margin: 0; color: #dc2626; font-size: 1.75rem; font-weight: 700;">Sign Out</h2>
+                        </div>
+                        <span class="close" onclick="closeModal('signOutModal')" style="position: absolute; top: 1rem; right: 1rem; color: #6b7280; font-size: 1.5rem; cursor: pointer; transition: color 0.2s ease;">&times;</span>
+                    </div>
+                    <div class="modal-body" style="padding: 2rem; text-align: center;">
+                        <h3 style="margin-bottom: 1rem; color: #111827; font-size: 1.25rem; font-weight: 600;">Are you sure you want to sign out?</h3>
+                        <p style="color: #6b7280; margin-bottom: 2rem; line-height: 1.6;">You'll need to sign in again to access your account, analysis history, and saved preferences.</p>
+                        
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; margin-bottom: 2rem;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #64748b; font-size: 0.9rem;">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Your data will be safely stored and available when you return</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <button type="button" class="btn-secondary" onclick="closeModal('signOutModal')" style="padding: 0.75rem 2rem; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                                <i class="fas fa-times"></i> Stay Signed In
+                            </button>
+                            <button type="button" class="btn-primary" onclick="confirmSignOut()" style="background: linear-gradient(135deg, #dc2626, #b91c1c); border: none; padding: 0.75rem 2rem; border-radius: 12px; font-weight: 600; color: white; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);">
+                                <i class="fas fa-sign-out-alt"></i> Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return modal;
+        }
+
+        function confirmSignOut() {
+            // Show loading state
+            const modal = document.getElementById('signOutModal');
+            const confirmBtn = modal.querySelector('.btn-primary');
+            const originalText = confirmBtn.innerHTML;
+            
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing out...';
+            
                 fetch('/api/signout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -571,40 +990,258 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                    showMessage('Successfully signed out! Redirecting...', 'success');
+                    setTimeout(() => {
                         window.location.href = '/';
+                    }, 1500);
+                } else {
+                    throw new Error('Sign out failed');
                     }
                 })
                 .catch(error => {
                     console.error('Error signing out:', error);
-                    // Still redirect even if API call fails
-                    window.location.href = '/';
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+                showMessage('Error signing out. Please try again.', 'error');
+            });
+        }
+
+        function showAccountSettings() {
+            showAccountSettingsModal();
+        }
+
+        function showAccountSettingsModal() {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('accountSettingsModal');
+            if (!modal) {
+                modal = createAccountSettingsModal();
+                document.body.appendChild(modal);
+            }
+            
+            // Populate form with current user data
+            populateAccountSettingsForm();
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function createAccountSettingsModal() {
+            const modal = document.createElement('div');
+            modal.id = 'accountSettingsModal';
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-user-edit"></i> Account Settings</h2>
+                        <span class="close" onclick="closeModal('accountSettingsModal')">&times;</span>
+                    </div>
+                    <form id="accountSettingsForm" class="modal-form">
+                        <div class="form-group">
+                            <label for="settingsName">Full Name</label>
+                            <input type="text" id="settingsName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="settingsEmail">Email Address</label>
+                            <input type="email" id="settingsEmail" name="email" required>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <button type="button" class="btn-secondary" onclick="closeModal('accountSettingsModal')">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Add form submission handler
+            modal.querySelector('#accountSettingsForm').addEventListener('submit', handleAccountSettingsUpdate);
+            
+            return modal;
+        }
+
+        function populateAccountSettingsForm() {
+            if (!currentUser) return;
+            
+            document.getElementById('settingsName').value = currentUser.name || '';
+            document.getElementById('settingsEmail').value = currentUser.email || '';
+        }
+
+        async function handleAccountSettingsUpdate(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const name = formData.get('name').trim();
+            const email = formData.get('email').trim();
+            
+            if (!name || !email) {
+                showMessage('Name and email are required', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ name, email })
                 });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update current user data
+                    currentUser.name = data.user.name;
+                    currentUser.email = data.user.email;
+                    
+                    // Update profile display
+                    displayUserProfile(currentUser);
+                    
+                    showMessage('Profile updated successfully!', 'success');
+                    closeModal('accountSettingsModal');
+            } else {
+                    showMessage(data.error || 'Failed to update profile', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Update profile error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
             }
         }
 
         function viewFullHistory() {
-            // Open history modal or redirect to history page
-            if (typeof openModal === 'function') {
-                openModal('historyModal');
-            } else {
-                // Fallback: show history in a simple alert or redirect
-                alert('History feature will be implemented soon!');
-            }
+            showHistoryModal();
         }
 
-        function exportUserData() {
+        function showHistoryModal() {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('historyModal');
+            if (!modal) {
+                modal = createHistoryModal();
+                document.body.appendChild(modal);
+            }
+            
+            // Populate history data
+            populateHistoryModal();
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function createHistoryModal() {
+            const modal = document.createElement('div');
+            modal.id = 'historyModal';
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-history"></i> Full Analysis History</h2>
+                        <span class="close" onclick="closeModal('historyModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="historyStats" style="margin-bottom: 1rem; padding: 1rem; background: #f9fafb; border-radius: 8px;">
+                            <!-- Stats will be populated here -->
+                        </div>
+                        <div id="historyList">
+                            <!-- History items will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return modal;
+        }
+
+        function populateHistoryModal() {
+            const statsDiv = document.getElementById('historyStats');
+            const historyDiv = document.getElementById('historyList');
+            
+            if (!statsDiv || !historyDiv) return;
+            
+            // Show statistics
+            const totalAnalyses = userHistory.length;
+            const safePrompts = userHistory.filter(item => item.is_safe).length;
+            const unsafePrompts = totalAnalyses - safePrompts;
+            const avgJailbreakRate = totalAnalyses > 0 
+                ? (userHistory.reduce((sum, item) => sum + item.jailbreak_rate, 0) / totalAnalyses).toFixed(1)
+                : 0;
+            
+            statsDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #4f46e5;">${totalAnalyses}</div>
+                        <div style="font-size: 0.85rem; color: #6b7280;">Total Analyses</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #059669;">${safePrompts}</div>
+                        <div style="font-size: 0.85rem; color: #6b7280;">Safe Prompts</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #dc2626;">${unsafePrompts}</div>
+                        <div style="font-size: 0.85rem; color: #6b7280;">Unsafe Prompts</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #7c3aed;">${avgJailbreakRate}%</div>
+                        <div style="font-size: 0.85rem; color: #6b7280;">Avg. Jailbreak Rate</div>
+                    </div>
+                </div>
+            `;
+            
+            // Show history items
             if (userHistory.length === 0) {
-                alert('No data to export.');
+                historyDiv.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No analysis history found.</p>';
                 return;
             }
 
-            const dataToExport = {
-                user: currentUser,
-                history: userHistory,
-                exportDate: new Date().toISOString()
-            };
+            historyDiv.innerHTML = userHistory.map(item => `
+                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: white;">
+                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #111827; margin-bottom: 0.25rem;">
+                                ${item.prompt.length > 100 ? item.prompt.substring(0, 100) + '...' : item.prompt}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #6b7280;">
+                                ${new Date(item.created_at).toLocaleString()}
+                            </div>
+                        </div>
+                        <div style="margin-left: 1rem;">
+                            <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; 
+                                background: ${item.is_safe ? '#dcfce7' : '#fef2f2'}; 
+                                color: ${item.is_safe ? '#166534' : '#dc2626'};">
+                                ${item.is_safe ? 'SAFE' : 'UNSAFE'}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
+                        <div><strong>Jailbreak Rate:</strong> ${item.jailbreak_rate.toFixed(1)}%</div>
+                        <div><strong>Perturbations:</strong> ${item.perturbations}</div>
+                        <div><strong>Type:</strong> ${item.perturbation_type}</div>
+                        <div><strong>Percentage:</strong> ${item.perturbation_pct}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            const dataStr = JSON.stringify(dataToExport, null, 2);
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        async function exportUserData() {
+            try {
+                const response = await fetch('/api/user/export', { credentials: 'include' });
+                if (!response.ok) {
+                    throw new Error('Failed to export data');
+                }
+                
+                const data = await response.json();
+                
+                // Create downloadable file
+                const dataStr = JSON.stringify(data, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
             
@@ -615,18 +1252,249 @@
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
+                
+                showMessage('Data exported successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showMessage('Failed to export data. Please try again.', 'error');
+            }
         }
 
         function changePassword() {
-            alert('Password change feature will be implemented soon!');
+            showChangePasswordModal();
+        }
+
+        function showChangePasswordModal() {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('changePasswordModal');
+            if (!modal) {
+                modal = createChangePasswordModal();
+                document.body.appendChild(modal);
+            }
+            
+            // Clear form
+            const form = modal.querySelector('#changePasswordForm');
+            if (form) form.reset();
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function createChangePasswordModal() {
+            const modal = document.createElement('div');
+            modal.id = 'changePasswordModal';
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-key"></i> Change Password</h2>
+                        <span class="close" onclick="closeModal('changePasswordModal')">&times;</span>
+                    </div>
+                    <form id="changePasswordForm" class="modal-form">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="current_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="new_password" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" name="confirm_new_password" required>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <button type="button" class="btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+                            <button type="submit" class="btn-primary">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Add form submission handler
+            modal.querySelector('#changePasswordForm').addEventListener('submit', handleChangePassword);
+            
+            return modal;
+        }
+
+        async function handleChangePassword(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const currentPassword = formData.get('current_password');
+            const newPassword = formData.get('new_password');
+            const confirmPassword = formData.get('confirm_new_password');
+            
+            if (newPassword !== confirmPassword) {
+                showMessage('New passwords do not match', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Password changed successfully!', 'success');
+                    closeModal('changePasswordModal');
+                } else {
+                    showMessage(data.error || 'Failed to change password', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Change password error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            }
         }
 
         function deleteAccount() {
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                if (confirm('This will permanently delete all your data. Are you absolutely sure?')) {
-                    alert('Account deletion feature will be implemented soon!');
-                }
+            showDeleteAccountModal();
+        }
+
+        function showDeleteAccountModal() {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('deleteAccountModal');
+            if (!modal) {
+                modal = createDeleteAccountModal();
+                document.body.appendChild(modal);
             }
+            
+            // Clear form
+            const form = modal.querySelector('#deleteAccountForm');
+            if (form) form.reset();
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function createDeleteAccountModal() {
+            const modal = document.createElement('div');
+            modal.id = 'deleteAccountModal';
+            modal.className = 'modal';
+            modal.style.display = 'none';
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header" style="border-bottom: 2px solid #fef2f2;">
+                        <h2 style="color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> Delete Account</h2>
+                        <span class="close" onclick="closeModal('deleteAccountModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                            <p style="color: #dc2626; margin: 0; font-weight: 600;">
+                                <i class="fas fa-exclamation-triangle"></i> Warning: This action cannot be undone!
+                            </p>
+                            <p style="color: #991b1b; margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                                This will permanently delete your account and all associated data including your analysis history.
+                            </p>
+                        </div>
+                        <form id="deleteAccountForm" class="modal-form">
+                            <div class="form-group">
+                                <label for="deletePassword">Enter your password to confirm</label>
+                                <input type="password" id="deletePassword" name="password" required 
+                                       placeholder="Type your password to confirm deletion">
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                                <button type="button" class="btn-secondary" onclick="closeModal('deleteAccountModal')">Cancel</button>
+                                <button type="submit" class="btn-primary" style="background: #dc2626; border-color: #dc2626;">Delete Account</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Add form submission handler
+            modal.querySelector('#deleteAccountForm').addEventListener('submit', handleDeleteAccount);
+            
+            return modal;
+        }
+
+        async function handleDeleteAccount(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const password = formData.get('password');
+            
+            if (!password) {
+                showMessage('Password is required to delete account', 'error');
+                return;
+            }
+            
+            // Double confirmation
+            if (!confirm('Are you absolutely sure you want to delete your account? This action cannot be undone!')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Account deleted successfully. Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showMessage(data.error || 'Failed to delete account', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Delete account error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            // Create or update message container
+            let messageContainer = document.getElementById('messageContainer');
+            if (!messageContainer) {
+                messageContainer = document.createElement('div');
+                messageContainer.id = 'messageContainer';
+                messageContainer.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; z-index: 10000;
+                    max-width: 400px; padding: 1rem; border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    display: none;
+                `;
+                document.body.appendChild(messageContainer);
+            }
+            
+            const bgColor = type === 'success' ? '#dcfce7' : '#fef2f2';
+            const textColor = type === 'success' ? '#166534' : '#dc2626';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            messageContainer.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas ${icon}" style="color: ${textColor};"></i>
+                    <span style="color: ${textColor}; font-weight: 500;">${message}</span>
+                </div>
+            `;
+            messageContainer.style.backgroundColor = bgColor;
+            messageContainer.style.border = `1px solid ${type === 'success' ? '#bbf7d0' : '#fecaca'}`;
+            messageContainer.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+            }, 5000);
         }
 
         // Utility function to format dates
